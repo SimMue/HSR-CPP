@@ -27,3 +27,15 @@
 *.exe
 *.out
 *.app
+
+# Folders
+Debug/
+Release/
+x64/
+x86/
+.vs/
+
+# Others
+*.idb
+*.log
+*.tlog
