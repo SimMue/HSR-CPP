@@ -1,0 +1,54 @@
+﻿main.cpp
+Eigene Includes ("") vor System-Includes (<>)
+Include von sstream braucht es hier nicht.
+Kwic sollte eine Funktion sein, die einen istream und einen ostream übernimmt und im main sollte es nur einen Aufruf dieser Funktion mit std::cin und std::cout als Argumente haben.
+ 
+ 
+word.h
+Die Name Klasse sollte in einem eigenen Namespace stehen
+Friends weisen praktisch immer auf einen Designfehler hin. Hier ist es unnötig die relationalen Operatoren als friend zu deklarieren. Weist auf duplizierte Logik hin (oder es ist einfach nur unnötig). Zudem ist es unnötig, wenn alle Teile der Klasse sowieso public sind.
+Gleiches bei den Input- und Output-Operatoren. Hier kann man aber dafür argumentieren, dass sie Sinn machen, wenn man sich read und print dadurch sparen kann.
+Niemals eine Referenz auf eine lokale Variable zurückgeben (operator <), ein Zugriff darauf ist Undefined Behavior. Der Compiler warnt davor.
+Braucht es wirklich eine toString() Member Funktion?
+Word(std::stirng) sollte den Parameter als "const &" entgegennehmen, um unnötige Kopien zu vermeiden. Zudem sollte der Konstruktor explicit sein.
+Die privaten Hilfsfunktionen müssen nicht zwingend Teil der Klasse sein.
+Die Default-Visibility von "class" ist bereits "private", entsprechend ist "private:" zu Beginn einer class redundant.
+ 
+ 
+word.cpp
+Include von iostream sollte nur im main() verwendet werden für std::cin und std::cout. Hier reichen istream und ostream.
+Bei der Default-Implementierung von Word() sollten Sie statt der expliziten Implementierung im .cpp-File dies direkt im Header mit = default kennzeichnen.
+Word(std::string): value sollte in der Initialisierungsliste des Konstruktors gesetzt werden. Die Qualifizierung von value mit Word:: ist unüblich. Wenn nötig würde man this-> verwenden.
+isValidWord(): Statt dem manuellen for-Loop wäre der std::all_of Algorithmus besser geeignet gewesen.
+skipNonAlphabetics(): Statt dem Vegleich von peek() mit -1 wäre es besser gewesen zu schauen ob der inputStream noch "good()" ist. Der Wert von EOF bei peek() ist zwar meisten -1 aber nicht garantiert.
+read(): Wenn nichts gültiges vom Stream gelesen werden kann, darf value nicht überschrieben werden. Die non-alpha-Zeichen sollten vor dem Lesen von Word übersprungen werden nicht nachher. Sonst "vernichtet" man möglicherweise Input, den man mit anderen Operatoren noch hätte einlesen können. Beispiel "week12" wird komplett konsumiert, jedoch könnte es Sinn machen nach dem Einlesen von "week" noch 12 in einen int einzulesen.
+read(): Wenn nichts gültiges gelesen werden kann, sollte auf dem Stream das Fail-Bit gesetzt werden. Und solange etwas gültiges gelesen werden konnte, darf der Stream das Fail/Bad-Bit nicht gesetzt haben, sonst funktionieren die Standard-Algorithmen nicht richtig.
+Mit std::lexicographical_compare könnte man sich die zwei Kopien der Repräsentation im operator< sparen.
+ 
+ 
+kwic.h
+Include von string fehlt
+Hier hätte eine Deklaration von einer kwic-Funktion mit istream und ostream als Parameter gereicht.
+Grosse Parameter nach Möglichkeit per "const &", um Kopien zu vermeiden.
+ 
+ 
+ 
+kwic.cpp
+Include fehlt: vector
+readLienes(): getline sollte im while als Bedinung aufgerufen werden, dann bricht readLines ab, sobald der Stream fertig ist. Dann muss der Aufruf nicht zweimal im Code stehen.
+readLines(): Zum Kommentar: Ja, das ist weil der Stream-State falsch ist (Word::read).
+readLines(): Das Einlesen geht noch etwas einfacher:
+                std::istringstream stringStream{line}; //Initialisierung mit {}, nicht mit (). stringStream ist kein guter Name. lineStream?
+                std::vector<Word> words{std::istream_iterator<Word>{stringStream}, std::istream_iterator<Word>{}};
+                lines.push_Back(words);
+printKwicLines(): Wenn lines ein set<vector<Word>> wäre, müsste man nicht explizit sortieren.
+createLineVariations() (createLineRotations?):  Es wäre schöner wenn diese Funktion nicht einen vector<std::string> zurückgeben würde sondern ein set<vector<Word>>. Die Logik ist noch etwas verwirrend: Kopieren -> Rotieren -> Einfügen, wobei Kopieren und Einfügen eigentlich zusammen gehören. Das Rotieren hat dazwischen nicht viel verloren.
+createLineVariations(): Der Rückgabewert ist nicht sortiert so wie von der Aufgabenstellung verlangt.
+ 
+ 
+Test.cpp
+Bei mir stürzen die Tests ab (Undefined Behavior von <)
+Include fehlt: vector
+Nur ein ASSERT pro Test: Tests aufsplitten.
+- Wieso wurde test_word_exercise_example() angepasst? Da fehlt eine Einleseoperation. Da fehlen wohl auch noch Tests von Woche 7.
+- Es wäre noch gut gewesen, wenn das Beispiel aus der Aufgabenstellung als Test umgesetzt worden wäre.
