@@ -1,0 +1,21 @@
+<testsuites>
+	<testsuite name="AllTests" tests="9">
+		<testcase classname="AllTests" name="instantiate_like_set_vector_test"/>
+		<testcase classname="AllTests" name="add_some_values_pick_first_test"/>
+		<testcase classname="AllTests" name="add_some_values_pick_last_reverse_test"/>
+		<testcase classname="AllTests" name="add_some_values_pick_first_reverse_test">
+			<error message="add_some_values_pick_first_reverse_test Index out of range!" type="unexpected exception">
+Index out of range!
+			</error>
+		</testcase>
+		<testcase classname="AllTests" name="add_some_values_pick_front_test"/>
+		<testcase classname="AllTests" name="add_some_values_pick_back_test">
+			<error message="add_some_values_pick_back_test Index out of range!" type="unexpected exception">
+Index out of range!
+			</error>
+		</testcase>
+		<testcase classname="AllTests" name="out_of_range_test"/>
+		<testcase classname="AllTests" name="caseless_Functor_test"/>
+		<testcase classname="AllTests" name="caseless_Functor2_test"/>
+	</testsuite>
+</testsuites>
